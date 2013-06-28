@@ -12,15 +12,15 @@ entity BaudRateOSGen is
     port (
 	     CLK : in std_logic;
 		  RateSelector : in std_logic_vector(1 downto 0);
-		  OSBaudTick : out std_logic
+		  OSBaudTick : out std_logic := '0'
 	 );
 end BaudRateOSGen;
 
 architecture Behavioral of BaudRateOSGen is
-	constant clkRatio0 : integer := BASE_CLK / BAUD_RATE0;
-	constant clkRatio1 : integer := BASE_CLK / BAUD_RATE1;
-	constant clkRatio2 : integer := BASE_CLK / BAUD_RATE2;
-	constant clkRatio3 : integer := BASE_CLK / BAUD_RATE3;
+	constant clkRatio0 : integer := BASE_CLK / (BAUD_RATE0 * 16);
+	constant clkRatio1 : integer := BASE_CLK / (BAUD_RATE1 * 16);
+	constant clkRatio2 : integer := BASE_CLK / (BAUD_RATE2 * 16);
+	constant clkRatio3 : integer := BASE_CLK / (BAUD_RATE3 * 16);
 	shared variable counter : integer := 0;
 	shared variable currentRatio : integer := clkRatio0; 
 begin
