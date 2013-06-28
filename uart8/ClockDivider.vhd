@@ -48,9 +48,8 @@ begin
 	CLK_DVDR: process(CLK_IN)
 	begin
 		if rising_edge(CLK_IN) then
-			if Inicio = '0' then
+			if Inicio = '0' AND count = 1 then
 				CLK_OUT <= '0';
-				count <= 1;
 			else
 				if count < mid then
 					CLK_OUT <= '1';
