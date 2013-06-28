@@ -19,10 +19,8 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -30,12 +28,24 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity CryptoModule is
+	PORT(
+		RD : in std_logic;
+		DATA_READ : in std_logic_vector(7 downto 0);
+		WT : out std_logic := '0';
+		DATA_WRITE : out std_logic_vector(7 downto 0)
+		);
 end CryptoModule;
 
 architecture Behavioral of CryptoModule is
-
 begin
-
-
+	main : process(RD)
+	begin
+		if RD = '1' then
+			DATA_WRITE <= conv_std_logic_vector(conv_integer(DATA_READ) + 1, 8);
+			WT <= '1';
+		else
+			WT <= '0';
+		end if;
+	end process main;
 end Behavioral;
 
