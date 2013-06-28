@@ -109,18 +109,22 @@ begin
 	reader_proc : process(read_CLK, state)
 	variable bits_read : integer := -1;
 	begin
-		if rising_edge(read_CLK) AND state = reading then
-			if bits_read > -1 AND bits_read < 8 then
-				inner_data(7-bits_read) <= RXD;
-			end if;
-			bits_read := bits_read + 1;
-			if bits_read > 8 then
-				has_finished <= '1';
-			end if;
-		elsif state = idle then
-			has_finished <= '0';
-			bits_read := -1;
-		end if;
+		case state is
+			when reading =>
+				if rising_edge(read_CLK) then
+					if bits_read > -1 AND bits_read < 8 then
+						inner_data(7-bits_read) <= RXD;
+					end if;
+					bits_read := bits_read + 1;
+					if bits_read > 8 then
+						has_finished <= '1';
+					end if;
+				end if;
+			when idle =>
+				has_finished <= '0';
+				bits_read := -1;
+			when others =>
+		end case;
 	end process reader_proc;
 end Behavioral;
 
