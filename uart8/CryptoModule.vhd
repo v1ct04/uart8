@@ -39,19 +39,21 @@ end CryptoModule;
 
 architecture Behavioral of CryptoModule is
 begin
-	main : process(RD, CLK)
-	variable wt_set : boolean := false;
+	main : process(CLK)
+	variable wt_sent : boolean := false;
 	begin
 		if rising_edge(CLK) then 
-			if wt_set then
+			if wt_sent then
 				WT <= '0';
-				wt_set := false;
 			end if;
 		end if;
-		if rising_edge(RD) then
+		if RD = '1' and NOT wt_sent then
 			DATA_WRITE <= conv_std_logic_vector(conv_integer(DATA_READ) + 1, 8);
 			WT <= '1';
-			wt_set := true;
+			wt_sent := true;
+		end if;
+		if RD = '0' then
+			wt_sent := false;
 		end if;
 	end process main;
 end Behavioral;
