@@ -57,11 +57,11 @@ ARCHITECTURE behavior OF ClockDividerTest IS
 
    -- Clock period definitions
    constant CLK_IN_period : time := 10 ns;
- 
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: ClockDivider PORT MAP (
+   uut: ClockDivider 
+		PORT MAP (
           Inicio => Inicio,
           CLK_IN => CLK_IN,
           CLK_OUT => CLK_OUT

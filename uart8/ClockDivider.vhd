@@ -30,14 +30,19 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity ClockDivider is
+	generic(
+		DIVISOR : positive := 16
+		);
+		
     port(
-			Inicio : in std_logic;
-			CLK_IN : in std_logic;
-			CLK_OUT : out std_logic
-			);
+		Inicio : in std_logic;
+		CLK_IN : in std_logic;
+		CLK_OUT : out std_logic
+		);
 end ClockDivider;
 
 architecture Behavioral of ClockDivider is
+	constant mid : positive := DIVISOR / 2 + 1;
 	signal count : positive := 1;
 begin
 	CLK_DVDR: process(CLK_IN)
@@ -47,12 +52,12 @@ begin
 				CLK_OUT <= '0';
 				count <= 1;
 			else
-				if count < 9 then
+				if count < mid then
 					CLK_OUT <= '1';
 				else
 					CLK_OUT <= '0';
 				end if;
-				if count = 16 then
+				if count = DIVISOR then
 					count <= 1;
 				else
 					count <= count + 1;
