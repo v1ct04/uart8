@@ -12,24 +12,25 @@ end UARTWriter;
 
 architecture Behavioral of UARTWriter is
 	signal internalData : std_logic_vector(9 downto 0) := (others => '0');
+	signal hasData : std_logic := '0';
 begin
     
     main : process (CLK)
-        variable counter : integer := 9;
-		variable hasData : std_logic := '0';
+        variable counter : integer range 0 to 10 := 0;
     begin
         if rising_edge (CLK) then
             if RD = '1' and hasData = '0' then
                 internalData <= '0' & data & '1';
-                hasData := '1';
+                hasData <= '1';
             end if;
             
             if hasData = '1' then
-                TXD <= internalData(counter);
-                counter := counter - 1;
-                if counter < 0 then
-                    counter := 9;
-                    hasData := '0';
+                TXD <= internalData(9);
+				internalData <= internalData(8 downto 0) & 'U';
+                counter := counter + 1;
+                if counter = 10 then
+                    counter := 0;
+                    hasData <= '0';
                 end if;
             end if;
         end if;
