@@ -22,13 +22,13 @@ begin
 			if wt_sent = '1' then
 				WT <= '0';
 			end if;
-			if RD = '1' AND NOT wt_sent then
+			if RD = '1' AND wt_sent = '0' then
 				DATA_WRITE <= conv_std_logic_vector(conv_integer(DATA_READ) + 1, 8);
 				WT <= '1';
-				wt_sent := '1';
+				wt_sent <= '1';
 			end if;
 			if RD = '0' then
-				wt_sent := '0';
+				wt_sent <= '0';
 			end if;
 		end if;
 	end process main;
