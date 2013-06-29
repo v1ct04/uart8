@@ -21,20 +21,25 @@ architecture Behavioral of BaudRateOSGen is
 	constant clkRatio1 : integer := BASE_CLK / (BAUD_RATE1 * 16);
 	constant clkRatio2 : integer := BASE_CLK / (BAUD_RATE2 * 16);
 	constant clkRatio3 : integer := BASE_CLK / (BAUD_RATE3 * 16);
-	shared variable counter : integer := 0;
-	shared variable currentRatio : integer := clkRatio0; 
+	
+	signal currentRatio : integer := clkRatio0;
+	signal halfCurrRatio : integer := currentRatio / 2;
 begin
 	
 	CLK_GEN : process (CLK)
+	variable counter : integer := 0;
 	begin
 		if rising_edge(CLK) then
+			counter := counter + 1;
+			if counter = currentRatio then
+				counter := 0;
+			end if;
+			
 			if counter = 0 then
 				OSBaudTick <= '0';
 			end if;
-			counter := counter + 1;
-			if counter = currentRatio then
+			if counter = halfCurrRatio then
 				OSBaudTick <= '1';
-				counter := 0;
 			end if;
 		end if;
 	end process CLK_GEN;
@@ -42,12 +47,13 @@ begin
 	RATE_SELECT : process (RateSelector)
 	begin
 		case RateSelector is
-			when "00" => currentRatio := clkRatio0;
-			when "01" => currentRatio := clkRatio1;
-			when "10" => currentRatio := clkRatio2;
-			when "11" => currentRatio := clkRatio3;
-			when others =>  currentRatio := clkRatio0;
+			when "00" => currentRatio <= clkRatio0;
+			when "01" => currentRatio <= clkRatio1;
+			when "10" => currentRatio <= clkRatio2;
+			when "11" => currentRatio <= clkRatio3;
+			when others =>  currentRatio <= clkRatio0;
 		end case;
+		halfCurrRatio <= currentRatio / 2;
 	end process RATE_SELECT;
 	 
 end Behavioral;
