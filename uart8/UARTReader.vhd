@@ -23,14 +23,14 @@ architecture Behavioral of UARTReader is
         );
     end component;
 	
-    type reader_states is (idle, reading, finished);
+   type reader_states is (idle, reading, finished);
 	signal state : reader_states := idle;
 	signal is_reading : std_logic := '0';
 	signal has_finished : std_logic := '0';
 	
 	signal read_CLK : std_logic := '0';
 	
-	signal inner_data : std_logic_vector(7 downto 0);
+	signal inner_data : std_logic_vector(8 downto 0);
 begin
 	ClkDivider : ClockDivider
 		generic map(DIVISOR => OVERSAMPLE_RATE)
@@ -39,62 +39,60 @@ begin
           CLK_IN => OSBaudTick,
           CLK_OUT => read_CLK
         );
-	state_listener : process(state)
+	divider_controller : process(state)
 	begin
 		if state = reading then
 			is_reading <= '1';
 		else
 			is_reading <= '0';
 		end if;
-	end process state_listener;
+	end process divider_controller;
 
-	state_controller : process(OSBaudTick, has_finished, RXD)
-	variable lead_bit_OScount : integer := 0;
+	state_controller : process(OSBaudTick)
+	variable lead_bit_OScount : integer range 0 to 7 := 0;
 	begin
-		case state is
-			when idle =>
-				if rising_edge(OSBaudTick) then
+		if rising_edge(OSBaudTick) then
+			case state is
+				when idle =>
+						if RXD = '0' then
+							lead_bit_OScount := lead_bit_OScount + 1;
+						else
+							lead_bit_OScount := 0;
+						end if;
+						if lead_bit_OScount = 7 then
+							state <= reading;
+						end if;
+				when reading =>
+					if has_finished = '1' then
+						state <= finished;
+						data <= inner_data(8 downto 1);
+						Fim <= '1';
+					end if;
+				when finished =>
 					if RXD = '0' then
-						lead_bit_OScount := lead_bit_OScount + 1;
-					else
+						state <= idle;
+						Fim <= '0';
 						lead_bit_OScount := 0;
 					end if;
-					if lead_bit_OScount = 7 then
-						state <= reading;
-					end if;
-				end if;
-			when reading =>
-				if has_finished = '1' then
-					state <= finished;
-					data <= inner_data;
-					Fim <= '1';
-				end if;
-			when finished =>
-				if RXD = '0' then
-					state <= idle;
-					Fim <= '0';
-					lead_bit_OScount := 0;
-				end if;
-		end case;
+			end case;
+		end if;
 	end process state_controller;
 	
 	reader_proc : process(read_CLK, state)
-	variable bits_read : integer := -1;
+	variable bits_read : integer range 0 to 10 := 0;
 	begin
 		case state is
 			when reading =>
 				if rising_edge(read_CLK) then
-					if bits_read > -1 AND bits_read < 8 then
-						inner_data(7-bits_read) <= RXD;
-					end if;
+					inner_data <= inner_data(7 downto 0) & RXD;
 					bits_read := bits_read + 1;
-					if bits_read > 8 then
+					if bits_read = 10 then
 						has_finished <= '1';
 					end if;
 				end if;
 			when idle =>
 				has_finished <= '0';
-				bits_read := -1;
+				bits_read := 0;
 			when others =>
 		end case;
 	end process reader_proc;
