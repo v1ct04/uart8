@@ -26,16 +26,15 @@ architecture Behavioral of BaudRateOSGen is
 	signal halfCurrRatio : integer := currentRatio / 2;
 begin
 	
-	CLK_GEN : process (CLK)
-	variable counter : integer := 0;
+	CLK_GEN : process (CLK, currentRatio)
+	variable counter : integer := currentRatio;
 	begin
 		if rising_edge(CLK) then
 			if counter = currentRatio then
 				counter := 0;
-			end if;
-			if counter < halfCurrRatio then
 				OSBaudTick <= '0';
-			else
+			end if;
+			if counter = halfCurrRatio then
 				OSBaudTick <= '1';
 			end if;
 			counter := counter + 1;
