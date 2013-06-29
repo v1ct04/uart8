@@ -22,16 +22,16 @@ begin
 	variable count : integer range 0 to DIVISOR := 0;
 	begin
 		if rising_edge(CLK_IN) then
+			if count = DIVISOR then
+				count := 0;
+			end if;
 			if Inicio = '1' OR count > 0 then
-				count := count + 1;
 				if count < mid then
 					CLK_OUT <= '1';
 				else
 					CLK_OUT <= '0';
 				end if;
-				if count = DIVISOR then
-					count := 0;
-				end if;
+				count := count + 1;
 			end if;
 		end if;
 	end process CLK_DVDR;

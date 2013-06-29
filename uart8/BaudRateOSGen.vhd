@@ -30,17 +30,15 @@ begin
 	variable counter : integer := 0;
 	begin
 		if rising_edge(CLK) then
-			counter := counter + 1;
 			if counter = currentRatio then
 				counter := 0;
 			end if;
-			
-			if counter = 0 then
+			if counter < halfCurrRatio then
 				OSBaudTick <= '0';
-			end if;
-			if counter = halfCurrRatio then
+			else
 				OSBaudTick <= '1';
 			end if;
+			counter := counter + 1;
 		end if;
 	end process CLK_GEN;
 	
