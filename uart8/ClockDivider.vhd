@@ -16,24 +16,19 @@ entity ClockDivider is
 end ClockDivider;
 
 architecture Behavioral of ClockDivider is
-	constant mid : positive := DIVISOR / 2 + 1;
-	signal count : positive := 1;
+	constant mid : positive := DIVISOR / 2;
 begin
 	CLK_DVDR: process(CLK_IN)
+	variable count : integer range 0 to DIVISOR := 0;
 	begin
 		if rising_edge(CLK_IN) then
-			if Inicio = '0' AND count = 1 then
-				CLK_OUT <= '0';
-			else
-				if count < mid then
+			if Inicio = '1' OR count > 0 then
+				count := count + 1;
+				if count = mid then
 					CLK_OUT <= '1';
-				else
+				elsif count = DIVISOR then
+					count := 0;
 					CLK_OUT <= '0';
-				end if;
-				if count = DIVISOR then
-					count <= 1;
-				else
-					count <= count + 1;
 				end if;
 			end if;
 		end if;
