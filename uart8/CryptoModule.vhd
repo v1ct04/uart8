@@ -14,22 +14,22 @@ entity CryptoModule is
 end CryptoModule;
 
 architecture Behavioral of CryptoModule is
+	signal wt_sent : std_logic := '0';
 begin
 	main : process(CLK)
-	variable wt_sent : boolean := false;
 	begin
 		if rising_edge(CLK) then 
-			if wt_sent then
+			if wt_sent = '1' then
 				WT <= '0';
 			end if;
-		end if;
-		if RD = '1' and NOT wt_sent then
-			DATA_WRITE <= conv_std_logic_vector(conv_integer(DATA_READ) + 1, 8);
-			WT <= '1';
-			wt_sent := true;
-		end if;
-		if RD = '0' then
-			wt_sent := false;
+			if RD = '1' AND NOT wt_sent then
+				DATA_WRITE <= conv_std_logic_vector(conv_integer(DATA_READ) + 1, 8);
+				WT <= '1';
+				wt_sent := '1';
+			end if;
+			if RD = '0' then
+				wt_sent := '0';
+			end if;
 		end if;
 	end process main;
 end Behavioral;
