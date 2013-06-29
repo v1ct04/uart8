@@ -80,8 +80,8 @@ BEGIN
    stim_proc: process
    begin
 		Inicio <= '0';
-		wait for 300 ns;
+		wait for 307 ns;
 		Inicio <= '1';
-		wait for 300 ns;
+		wait for 359 ns;
    end process;
 END;

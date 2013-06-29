@@ -36,7 +36,7 @@ BEGIN
 		BAUD_RATE1 => 3,
 		BAUD_RATE2 => 4,
 		BAUD_RATE3 => 6,
-		BASE_CLK => 12
+		BASE_CLK => 1000
 	)
 	PORT MAP(
 		CLK => CLK,
@@ -49,21 +49,15 @@ BEGIN
 	tb : PROCESS
 	BEGIN
 		RateSelector <= "00";
-		wait for 240 ns;
-		RateSelector <= "01";
-		wait for 240 ns;
-		RateSelector <= "10";
-		wait for 240 ns;
-		RateSelector <= "11";
 		wait;
 	END PROCESS tb;
 
 	clk_signal : process
 	begin
 		CLK <= '0';
-		wait for 5 ns;
+		wait for 500 us;
 		CLK <= '1';
-		wait for 5 ns;
+		wait for 500 us;
 	end process clk_signal;
 	--  End Test Bench 
 
