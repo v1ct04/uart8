@@ -11,7 +11,7 @@ entity ClockDivider is
     port(
 		Inicio : in std_logic;
 		CLK_IN : in std_logic;
-		CLK_OUT : out std_logic
+		CLK_OUT : out std_logic := '0'
 		);
 end ClockDivider;
 
@@ -24,11 +24,13 @@ begin
 		if rising_edge(CLK_IN) then
 			if Inicio = '1' OR count > 0 then
 				count := count + 1;
-				if count = mid then
+				if count < mid then
 					CLK_OUT <= '1';
-				elsif count = DIVISOR then
-					count := 0;
+				else
 					CLK_OUT <= '0';
+				end if;
+				if count = DIVISOR then
+					count := 0;
 				end if;
 			end if;
 		end if;
