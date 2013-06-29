@@ -53,7 +53,10 @@ begin
 			when "11" => currentRatio <= clkRatio3;
 			when others =>  currentRatio <= clkRatio0;
 		end case;
-		halfCurrRatio <= currentRatio / 2;
 	end process RATE_SELECT;
-	 
+	
+	HALF_RATIO : process (currentRatio)
+	begin	
+		halfCurrRatio <= currentRatio / 2;
+	end process HALF_RATIO;
 end Behavioral;
